@@ -285,60 +285,41 @@
 
   /* PHOTO PREVIEW */
   .photo-preview-section { background: var(--ink); padding: 0; }
-  .photo-preview-header {
+  .photo-preview-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px;
+  }
+  .ppitem {
+    position: relative; overflow: hidden; aspect-ratio: 4/3; cursor: pointer;
+  }
+  .ppitem img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.4s ease, filter 0.3s ease;
+  }
+  .ppitem:hover img { transform: scale(1.05); filter: brightness(1.05); }
+  .pp-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 1.5rem 0.75rem 0.6rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+    font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.9); text-transform: uppercase;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .ppitem:hover .pp-label { opacity: 1; }
+  .photo-preview-cta-row {
+    padding: 1.5rem 4rem;
     display: flex; justify-content: space-between; align-items: center;
-    padding: 1.5rem 4rem 1rem;
-    background: var(--ink);
   }
   .photo-preview-label {
-    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
     color: var(--mist); text-transform: uppercase;
   }
   .photo-preview-cta {
     font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em;
     color: var(--tide); text-transform: uppercase; text-decoration: none;
-    border: 1px solid rgba(74,154,181,0.4); padding: 0.5rem 1rem;
+    border: 1px solid rgba(74,154,181,0.4); padding: 0.6rem 1.25rem;
     transition: all 0.2s;
   }
   .photo-preview-cta:hover { background: var(--tide); color: var(--ink); }
-  .photo-preview-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px;
-    background: var(--ink); padding: 0 0 3px;
-  }
-  .ppitem {
-    position: relative; overflow: hidden; aspect-ratio: 1; cursor: pointer;
-  }
-  .ppitem img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    transition: transform 0.4s ease, filter 0.3s ease;
-    filter: brightness(0.8);
-  }
-  .ppitem:hover img { transform: scale(1.06); filter: brightness(1); }
-  .pp-label {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 1rem 0.6rem 0.5rem;
-    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-    font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.85); text-transform: uppercase;
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .ppitem:hover .pp-label { opacity: 1; }
-  .ppmore { position: relative; }
-  .pp-more-overlay {
-    position: absolute; inset: 0; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: rgba(26,58,74,0.75);
-    transition: background 0.3s;
-  }
-  .ppmore:hover .pp-more-overlay { background: rgba(26,58,74,0.9); }
-  .pp-more-count {
-    font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700;
-    color: var(--sand); line-height: 1;
-  }
-  .pp-more-text {
-    font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em;
-    color: var(--tide); text-transform: uppercase; margin-top: 0.4rem;
-  }
 
   @media (max-width: 768px) {
     .photo-preview-header { padding: 1.5rem 1.5rem 1rem; }
@@ -427,23 +408,15 @@
 
 <!-- PHOTO PREVIEW -->
 <div class="photo-preview-section">
-  <div class="photo-preview-header">
-    <div class="photo-preview-label">2023 MLS Listing · 38 Photos</div>
-    <a href="photos.html" class="photo-preview-cta">View All Photos →</a>
-  </div>
   <div class="photo-preview-grid">
     <div class="ppitem" onclick="window.location='photos.html'"><img src="IMG_8974.webp" alt="Living room" /><div class="pp-label">Living Room</div></div>
     <div class="ppitem" onclick="window.location='photos.html'"><img src="IMG_8977.webp" alt="Kitchen" /><div class="pp-label">Kitchen</div></div>
     <div class="ppitem" onclick="window.location='photos.html'"><img src="IMG_8971.webp" alt="Primary bedroom" /><div class="pp-label">Primary Bedroom</div></div>
-    <div class="ppitem" onclick="window.location='photos.html'"><img src="IMG_8987.webp" alt="Primary bath" /><div class="pp-label">Primary Bath</div></div>
-    <div class="ppitem" onclick="window.location='photos.html'"><img src="IMG_8960.webp" alt="Loft" /><div class="pp-label">Loft</div></div>
-    <div class="ppitem ppmore" onclick="window.location='photos.html'">
-      <img src="IMG_8976.webp" alt="More photos" />
-      <div class="pp-more-overlay">
-        <span class="pp-more-count">+33</span>
-        <span class="pp-more-text">View All Photos</span>
-      </div>
-    </div>
+    <div class="ppitem" onclick="window.location='photos.html'"><img src="IMG_8976.webp" alt="Backyard patio" /><div class="pp-label">Backyard</div></div>
+  </div>
+  <div class="photo-preview-cta-row">
+    <div class="photo-preview-label">38 Photos · 2023 MLS Listing</div>
+    <a href="photos.html" class="photo-preview-cta">View All 38 Photos →</a>
   </div>
 </div>
 
