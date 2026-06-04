@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>741 Starfish Drive — Glen Cove, Vallejo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f5f0e8;
+    --dune: #e8dfc8;
+    --ocean: #1a3a4a;
+    --seafoam: #2d6a7f;
+    --tide: #4a9ab5;
+    --coral: #c4624a;
+    --gold: #b8944a;
+    --ink: #1a1a18;
+    --mist: #8a9ba8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--sand); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 4rem;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('IMG_8978.webp');
+    background-size: cover;
+    background-position: center 30%;
+    filter: brightness(0.45);
+    transition: transform 8s ease;
+  }
+  .hero:hover .hero-bg { transform: scale(1.03); }
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(10,25,35,0.95) 0%, rgba(10,25,35,0.3) 60%, transparent 100%);
+  }
+  .hero-content { position: relative; z-index: 2; }
+  .hero-address {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.3em; color: var(--tide);
+    text-transform: uppercase; margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 900;
+    color: var(--sand); line-height: 0.9; margin-bottom: 0.5rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--tide); }
+  .hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.8rem); font-style: italic;
+    color: rgba(245,240,232,0.6); margin-bottom: 3rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+  .hero-stats {
+    display: flex; gap: 3rem; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .hero-stat { border-left: 2px solid var(--seafoam); padding-left: 1rem; }
+  .hero-stat-value { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--sand); }
+  .hero-stat-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--mist); text-transform: uppercase; margin-top: 0.2rem; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(26,58,74,0.96); backdrop-filter: blur(10px);
+    padding: 1rem 4rem; display: flex; gap: 2rem; align-items: center;
+    border-bottom: 1px solid rgba(74,154,181,0.2);
+    overflow-x: auto;
+  }
+  .nav-logo { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; color: var(--tide); text-transform: uppercase; margin-right: auto; white-space: nowrap; }
+  nav a { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--mist); text-decoration: none; text-transform: uppercase; transition: color 0.2s; white-space: nowrap; }
+  nav a:hover { color: var(--tide); }
+
+  /* PHOTO GALLERY */
+  .gallery-hero {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    grid-template-rows: 320px 240px;
+    gap: 3px;
+    background: var(--ink);
+  }
+  .gallery-hero .gh-main {
+    grid-row: 1 / 3;
+    position: relative; overflow: hidden;
+  }
+  .gallery-hero .gh-cell {
+    position: relative; overflow: hidden;
+  }
+  .gallery-hero img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.5s ease, filter 0.4s ease;
+    filter: brightness(0.92);
+  }
+  .gallery-hero .gh-cell:hover img,
+  .gallery-hero .gh-main:hover img { transform: scale(1.04); filter: brightness(1.05); }
+  .gh-label {
+    position: absolute; bottom: 0.75rem; left: 1rem;
+    font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.85); text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .gh-main:hover .gh-label,
+  .gh-cell:hover .gh-label { opacity: 1; }
+
+  /* PHOTO GRID — interior tour */
+  .photo-grid-section { background: var(--ink); padding: 3px; }
+  .photo-grid-section-title {
+    background: var(--ink); padding: 2rem 4rem 1rem;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    letter-spacing: 0.3em; color: var(--tide); text-transform: uppercase;
+  }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+  }
+  .photo-grid-item {
+    position: relative; overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+  }
+  .photo-grid-item img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.4s ease, filter 0.3s ease;
+    filter: brightness(0.88);
+  }
+  .photo-grid-item:hover img { transform: scale(1.06); filter: brightness(1.05); }
+  .photo-grid-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 1.5rem 0.75rem 0.6rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+    font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.85); text-transform: uppercase;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .photo-grid-item:hover .photo-grid-label { opacity: 1; }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.93); align-items: center; justify-content: center;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 88vh; object-fit: contain; display: block; }
+  .lb-close {
+    position: absolute; top: 1.5rem; right: 2rem;
+    font-family: 'DM Mono', monospace; font-size: 1.5rem; color: var(--mist);
+    cursor: pointer; transition: color 0.2s; line-height: 1;
+  }
+  .lb-close:hover { color: white; }
+  .lb-prev, .lb-next {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-family: 'DM Mono', monospace; font-size: 2rem; color: var(--mist);
+    cursor: pointer; padding: 1rem; transition: color 0.2s; user-select: none;
+  }
+  .lb-prev { left: 1rem; }
+  .lb-next { right: 1rem; }
+  .lb-prev:hover, .lb-next:hover { color: white; }
+  .lb-caption {
+    position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
+    color: var(--mist); text-transform: uppercase; white-space: nowrap;
+  }
+  .lb-counter {
+    position: absolute; top: 1.5rem; left: 2rem;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
+    color: var(--mist); text-transform: uppercase;
+  }
+
+  /* SECTIONS */
+  section { padding: 6rem 4rem; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; color: var(--coral); text-transform: uppercase; margin-bottom: 1rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; line-height: 1.1; margin-bottom: 3rem; color: var(--ocean); }
+
+  /* DETAILS GRID */
+  #details { background: var(--sand); }
+  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--dune); }
+  .detail-row > * { padding: 1.1rem 2rem; border-bottom: 1px solid var(--dune); display: flex; align-items: center; }
+  .detail-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mist); background: rgba(232,223,200,0.4); border-right: 1px solid var(--dune); }
+  .detail-value { font-size: 0.92rem; font-weight: 500; color: var(--ocean); }
+
+  /* FEATURE CARDS */
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .feature-card { background: var(--ocean); color: var(--sand); padding: 2rem; position: relative; overflow: hidden; transition: transform 0.3s ease; }
+  .feature-card::before { content: ''; position: absolute; bottom: 0; right: 0; width: 80px; height: 80px; background: var(--seafoam); border-radius: 50% 0 0 0; opacity: 0.3; transition: transform 0.3s ease; }
+  .feature-card:hover { transform: translateY(-4px); }
+  .feature-card:hover::before { transform: scale(1.5); }
+  .feature-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .feature-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .feature-desc { font-size: 0.82rem; color: var(--mist); line-height: 1.6; }
+
+  /* HISTORY */
+  #history { background: var(--ocean); color: var(--sand); }
+  #history .section-title { color: var(--sand); }
+  .timeline { position: relative; padding-left: 3rem; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--tide), transparent); }
+  .timeline-item { position: relative; margin-bottom: 3.5rem; opacity: 0; transform: translateX(-20px); transition: all 0.6s ease; }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+  .timeline-dot { position: absolute; left: -3.375rem; top: 0.25rem; width: 12px; height: 12px; border-radius: 50%; background: var(--tide); border: 2px solid var(--ocean); box-shadow: 0 0 0 3px rgba(74,154,181,0.3); }
+  .timeline-dot.highlight { background: var(--coral); box-shadow: 0 0 0 3px rgba(196,98,74,0.3); }
+  .timeline-year { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--tide); text-transform: uppercase; margin-bottom: 0.4rem; }
+  .timeline-event { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--sand); margin-bottom: 0.4rem; }
+  .timeline-detail { font-size: 0.85rem; color: var(--mist); line-height: 1.6; max-width: 520px; }
+  .timeline-price { display: inline-block; margin-top: 0.5rem; font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--sand); background: var(--coral); padding: 0.25rem 0.75rem; letter-spacing: 0.1em; }
+
+  /* TAX HISTORY */
+  #taxes { background: var(--dune); }
+  .tax-bar-container { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; opacity: 0; transform: translateX(-10px); transition: all 0.5s ease; }
+  .tax-bar-container.visible { opacity: 1; transform: translateX(0); }
+  .tax-year { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--mist); width: 2.5rem; text-align: right; flex-shrink: 0; }
+  .tax-bar-track { flex: 1; height: 28px; background: rgba(26,58,74,0.08); position: relative; overflow: hidden; }
+  .tax-bar-fill { height: 100%; background: linear-gradient(to right, var(--seafoam), var(--tide)); width: 0%; transition: width 1s ease; }
+  .tax-bar-fill.highlight { background: linear-gradient(to right, var(--coral), #e07a5f); }
+  .tax-value { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--ocean); width: 5rem; flex-shrink: 0; font-weight: 500; }
+
+  /* NEIGHBORHOOD */
+  #neighborhood { background: var(--sand); }
+  .neighborhood-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--dune); border: 1px solid var(--dune); margin-top: 2rem; }
+  .neighborhood-card { background: var(--sand); padding: 2rem 1.5rem; text-align: center; transition: background 0.3s; }
+  .neighborhood-card:hover { background: var(--ocean); }
+  .neighborhood-card:hover .neighborhood-stat { color: var(--tide); }
+  .neighborhood-card:hover .neighborhood-label { color: var(--mist); }
+  .neighborhood-stat { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--ocean); transition: color 0.3s; }
+  .neighborhood-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mist); margin-top: 0.4rem; transition: color 0.3s; }
+
+  /* BUILDER */
+  #builder { background: var(--ocean); color: var(--sand); }
+  #builder .section-title { color: var(--sand); }
+  .builder-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .builder-body { font-size: 0.95rem; line-height: 1.8; color: rgba(245,240,232,0.8); }
+  .builder-body p + p { margin-top: 1.2rem; }
+  .builder-fact { border-left: 3px solid var(--coral); padding: 1.5rem 2rem; background: rgba(255,255,255,0.04); margin-top: 2rem; }
+  .builder-fact-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--coral); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .builder-fact-text { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--sand); line-height: 1.6; }
+  .builder-stats { display: flex; flex-direction: column; gap: 2rem; }
+  .builder-stat-item { border-bottom: 1px solid rgba(74,154,181,0.2); padding-bottom: 2rem; }
+  .builder-stat-item:last-child { border-bottom: none; }
+  .builder-stat-number { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; color: var(--tide); line-height: 1; }
+  .builder-stat-desc { font-size: 0.85rem; color: var(--mist); margin-top: 0.4rem; line-height: 1.5; }
+
+  /* SCHOOLS */
+  #schools { background: var(--sand); }
+  .schools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+  .school-card { border: 1px solid var(--dune); padding: 1.75rem; position: relative; background: white; transition: box-shadow 0.3s; }
+  .school-card:hover { box-shadow: 0 8px 30px rgba(26,58,74,0.12); }
+  .school-rating { position: absolute; top: 1.75rem; right: 1.75rem; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.8rem; font-weight: 500; color: white; }
+  .rating-good { background: var(--seafoam); }
+  .rating-mid { background: var(--gold); }
+  .school-type { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--mist); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .school-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--ocean); margin-bottom: 0.3rem; padding-right: 3rem; }
+  .school-grades { font-size: 0.8rem; color: var(--mist); }
+  .school-distance { margin-top: 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--tide); letter-spacing: 0.1em; }
+
+  /* VALUE */
+  #value { background: var(--dune); }
+  .value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--ocean); border: 1px solid var(--ocean); margin-top: 2rem; }
+  .value-cell { background: var(--dune); padding: 2.5rem 2rem; text-align: center; }
+  .value-amount { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--ocean); }
+  .value-year { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--mist); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .value-change { font-family: 'DM Mono', monospace; font-size: 0.7rem; margin-top: 0.3rem; color: var(--seafoam); }
+
+  /* FOOTER */
+  footer { background: var(--ink); color: var(--mist); padding: 3rem 4rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-style: italic; color: var(--sand); }
+  .footer-meta { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-align: right; line-height: 1.8; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    section { padding: 4rem 1.5rem; }
+    nav { padding: 1rem 1.5rem; gap: 1.5rem; }
+    .hero { padding: 2rem 1.5rem; }
+    .hero-stats { gap: 1.5rem; }
+    .gallery-hero { grid-template-columns: 1fr 1fr; grid-template-rows: 220px 220px 200px; }
+    .gallery-hero .gh-main { grid-row: 1; grid-column: 1 / 3; }
+    .photo-grid { grid-template-columns: repeat(2, 1fr); }
+    .builder-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .value-grid { grid-template-columns: 1fr; }
+    .details-grid { grid-template-columns: 1fr; }
+    .detail-label { border-right: none; background: none; color: var(--coral); font-size: 0.6rem; padding-bottom: 0.2rem; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-meta { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-address">741 Starfish Drive · Vallejo, CA 94591 · APN 0075-184-080</p>
+    <h1 class="hero-title">741<br><em>Starfish</em><br>Drive</h1>
+    <p class="hero-subtitle">Glen Cove · Shadow Ridge · Westpointe</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-value">1,834</div><div class="hero-stat-label">Square Feet</div></div>
+      <div class="hero-stat"><div class="hero-stat-value">3 / 3</div><div class="hero-stat-label">Beds / Baths</div></div>
+      <div class="hero-stat"><div class="hero-stat-value">1986</div><div class="hero-stat-label">Year Built</div></div>
+      <div class="hero-stat"><div class="hero-stat-value">$682K</div><div class="hero-stat-label">Zestimate</div></div>
+      <div class="hero-stat"><div class="hero-stat-value">0.14 ac</div><div class="hero-stat-label">Lot Size</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">741 Starfish Dr</span>
+  <a href="#gallery">Photos</a>
+  <a href="#details">Details</a>
+  <a href="#history">History</a>
+  <a href="#taxes">Taxes</a>
+  <a href="#builder">Builder</a>
+  <a href="#neighborhood">Area</a>
+  <a href="#schools">Schools</a>
+  <a href="#value">Value</a>
+</nav>
+
+<!-- GALLERY HERO -->
+<div id="gallery">
+  <div class="gallery-hero">
+    <div class="gh-main" onclick="openLightbox(3)">
+      <img src="IMG_8978.webp" alt="741 Starfish Drive front exterior" />
+      <div class="gh-label">Front Exterior · 741 Starfish Drive</div>
+    </div>
+    <div class="gh-cell" onclick="openLightbox(0)">
+      <img src="IMG_8975.webp" alt="Living room with vaulted ceilings and fireplace" />
+      <div class="gh-label">Living Room · Vaulted Ceilings</div>
+    </div>
+    <div class="gh-cell" onclick="openLightbox(8)">
+      <img src="IMG_8974.webp" alt="Living room grand staircase" />
+      <div class="gh-label">Living Room · Grand Staircase</div>
+    </div>
+    <div class="gh-cell" onclick="openLightbox(9)">
+      <img src="IMG_8968.webp" alt="Living room fireplace bright windows" />
+      <div class="gh-label">Living Room · Fireplace</div>
+    </div>
+    <div class="gh-cell" onclick="openLightbox(20)">
+      <img src="IMG_8977.webp" alt="Kitchen" />
+      <div class="gh-label">Kitchen</div>
+    </div>
+    <div class="gh-cell" onclick="openLightbox(7)">
+      <img src="IMG_8976.webp" alt="Backyard patio" />
+      <div class="gh-label">Backyard Patio</div>
+    </div>
+  </div>
+</div>
+
+<!-- INTERIOR PHOTO GRID -->
+<div class="photo-grid-section">
+  <div class="photo-grid-section-title">Complete Photo Tour · 38 Photos · 2023 MLS Listing</div>
+  <div class="photo-grid">
+    <!-- EXTERIOR -->
+    <div class="photo-grid-item pgwide" onclick="openLightbox(0)"><img src="IMG_8978.webp" alt="Front exterior" /><div class="photo-grid-label">Front Exterior — Main</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(1)"><img src="IMG_8992.webp" alt="Garage" /><div class="photo-grid-label">Front — Garage View</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(2)"><img src="IMG_8989.webp" alt="Driveway" /><div class="photo-grid-label">Front — Driveway</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(3)"><img src="IMG_8979.webp" alt="Front entry" /><div class="photo-grid-label">Front Entry Door</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(4)"><img src="IMG_8985.webp" alt="Rear exterior" /><div class="photo-grid-label">Rear Exterior</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(5)"><img src="IMG_8967.webp" alt="Backyard wide" /><div class="photo-grid-label">Rear — Wide View</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(6)"><img src="IMG_8991.webp" alt="Backyard" /><div class="photo-grid-label">Backyard</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(7)"><img src="IMG_8976.webp" alt="Patio" /><div class="photo-grid-label">Patio & Retaining Wall</div></div>
+    <!-- LIVING AREAS -->
+    <div class="photo-grid-item pgwide" onclick="openLightbox(8)"><img src="IMG_8974.webp" alt="Grand staircase" /><div class="photo-grid-label">Living Room — Grand Staircase</div></div>
+    <div class="photo-grid-item pgwide" onclick="openLightbox(9)"><img src="IMG_8968.webp" alt="Fireplace" /><div class="photo-grid-label">Living Room — Fireplace & Windows</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(10)"><img src="IMG_8975.webp" alt="Entry view" /><div class="photo-grid-label">Living Room — Entry</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(11)"><img src="IMG_8965.webp" alt="Dining arch" /><div class="photo-grid-label">Living — Staircase Arch</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(12)"><img src="IMG_8980.webp" alt="Loft view" /><div class="photo-grid-label">Living Room — Loft View</div></div>
+    <!-- DINING & FAMILY -->
+    <div class="photo-grid-item" onclick="openLightbox(13)"><img src="IMG_8964.webp" alt="Formal dining" /><div class="photo-grid-label">Formal Dining Room</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(14)"><img src="IMG_8957.webp" alt="Dining slider" /><div class="photo-grid-label">Dining — Backyard Slider</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(15)"><img src="IMG_8983.webp" alt="Family room" /><div class="photo-grid-label">Family Room + Kitchen</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(16)"><img src="IMG_8986.webp" alt="Family room 2" /><div class="photo-grid-label">Family Room</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(17)"><img src="IMG_8970.webp" alt="Family room TV" /><div class="photo-grid-label">Family Room — TV Area</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(18)"><img src="IMG_8959.webp" alt="Nook" /><div class="photo-grid-label">Family Room & Nook</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(19)"><img src="IMG_8993.webp" alt="Breakfast nook" /><div class="photo-grid-label">Breakfast Nook</div></div>
+    <!-- KITCHEN -->
+    <div class="photo-grid-item" onclick="openLightbox(20)"><img src="IMG_8977.webp" alt="Kitchen" /><div class="photo-grid-label">Kitchen — Appliances</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(21)"><img src="IMG_8990.webp" alt="Kitchen 2" /><div class="photo-grid-label">Kitchen — Alternate View</div></div>
+    <!-- LOFT & OFFICE -->
+    <div class="photo-grid-item" onclick="openLightbox(22)"><img src="IMG_8960.webp" alt="Loft" /><div class="photo-grid-label">Loft — Overlooks Living Room</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(23)"><img src="IMG_8984.webp" alt="Office" /><div class="photo-grid-label">Office / Bedroom 3</div></div>
+    <!-- PRIMARY -->
+    <div class="photo-grid-item" onclick="openLightbox(24)"><img src="IMG_8971.webp" alt="Primary bed" /><div class="photo-grid-label">Primary Bedroom</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(25)"><img src="IMG_8966.webp" alt="Primary bed 2" /><div class="photo-grid-label">Primary Bedroom — Warm</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(26)"><img src="IMG_8981.webp" alt="Primary bed 3" /><div class="photo-grid-label">Primary Bedroom — Fan</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(27)"><img src="IMG_8982.webp" alt="Primary closet" /><div class="photo-grid-label">Primary — Closet</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(28)"><img src="IMG_8987.webp" alt="Primary bath" /><div class="photo-grid-label">Primary Bath — Double Sinks</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(29)"><img src="IMG_8969.webp" alt="Primary shower" /><div class="photo-grid-label">Primary Bath — Shower</div></div>
+    <!-- BEDROOMS 2 & 3 -->
+    <div class="photo-grid-item" onclick="openLightbox(30)"><img src="IMG_8963.webp" alt="Bedroom 2" /><div class="photo-grid-label">Bedroom 2 — Mirror Closet</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(31)"><img src="IMG_8961.webp" alt="Bedroom 2 window" /><div class="photo-grid-label">Bedroom 2 — Window</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(32)"><img src="IMG_8972.webp" alt="Bedroom 3" /><div class="photo-grid-label">Bedroom 3 — Navy Floral</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(33)"><img src="IMG_8973.webp" alt="Bedroom 3 closet" /><div class="photo-grid-label">Bedroom 3 — Closet</div></div>
+    <!-- UTILITY / BATHS -->
+    <div class="photo-grid-item" onclick="openLightbox(34)"><img src="IMG_8962.webp" alt="Upper hallway" /><div class="photo-grid-label">Upper Hallway</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(35)"><img src="IMG_8958.webp" alt="Laundry" /><div class="photo-grid-label">Laundry Room</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(36)"><img src="IMG_8988.webp" alt="Half bath" /><div class="photo-grid-label">Half Bath</div></div>
+    <div class="photo-grid-item" onclick="openLightbox(37)"><img src="IMG_8994.webp" alt="Full bath" /><div class="photo-grid-label">Second Full Bathroom</div></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-close" onclick="closeLightbox()">✕</div>
+  <div class="lb-counter" id="lb-counter">1 / 20</div>
+  <div class="lb-prev" onclick="changeLightbox(-1)">←</div>
+  <img id="lb-img" src="" alt="" />
+  <div class="lb-next" onclick="changeLightbox(1)">→</div>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<!-- PROPERTY DETAILS -->
+<section id="details">
+  <p class="section-label">Property Overview</p>
+  <h2 class="section-title">Home Facts &<br>Specifications</h2>
+  <div class="details-grid">
+    <div class="detail-row"><div class="detail-label">Address</div><div class="detail-value">741 Starfish Drive, Vallejo, CA 94591</div></div>
+    <div class="detail-row"><div class="detail-label">Parcel (APN)</div><div class="detail-value">0075-184-080</div></div>
+    <div class="detail-row"><div class="detail-label">Year Built</div><div class="detail-value">1986 · Citation Builders</div></div>
+    <div class="detail-row"><div class="detail-label">Living Area</div><div class="detail-value">1,834 sq ft</div></div>
+    <div class="detail-row"><div class="detail-label">Lot Size</div><div class="detail-value">6,000 sq ft (0.14 acres)</div></div>
+    <div class="detail-row"><div class="detail-label">Stories</div><div class="detail-value">2</div></div>
+    <div class="detail-row"><div class="detail-label">Bedrooms</div><div class="detail-value">3</div></div>
+    <div class="detail-row"><div class="detail-label">Bathrooms</div><div class="detail-value">2 full + 1 half (ground floor)</div></div>
+    <div class="detail-row"><div class="detail-label">Garage</div><div class="detail-value">2-car attached</div></div>
+    <div class="detail-row"><div class="detail-label">Foundation</div><div class="detail-value">Concrete slab</div></div>
+    <div class="detail-row"><div class="detail-label">Roof</div><div class="detail-value">Composition shingle</div></div>
+    <div class="detail-row"><div class="detail-label">Heating</div><div class="detail-value">Central forced air</div></div>
+    <div class="detail-row"><div class="detail-label">Cooling</div><div class="detail-value">Ceiling fan + whole-house attic fan</div></div>
+    <div class="detail-row"><div class="detail-label">Fireplace</div><div class="detail-value">1 — Living room, wood burning</div></div>
+    <div class="detail-row"><div class="detail-label">Flooring</div><div class="detail-value">Carpet, laminate, tile</div></div>
+    <div class="detail-row"><div class="detail-label">Ceilings</div><div class="detail-value">High & vaulted ceilings</div></div>
+    <div class="detail-row"><div class="detail-label">Kitchen</div><div class="detail-value">Tile countertops, stainless appliances, skylight ceiling</div></div>
+    <div class="detail-row"><div class="detail-label">Additional Rooms</div><div class="detail-value">Loft, office area, separate family room, formal dining, breakfast nook</div></div>
+    <div class="detail-row"><div class="detail-label">Primary Bath</div><div class="detail-value">Double sinks, solid surface countertop, shower/tub combo</div></div>
+    <div class="detail-row"><div class="detail-label">Laundry</div><div class="detail-value">Inside utility room</div></div>
+    <div class="detail-row"><div class="detail-label">HOA</div><div class="detail-value">None ($0/month)</div></div>
+    <div class="detail-row"><div class="detail-label">Zoning</div><div class="detail-value">R1 — Single family residential</div></div>
+    <div class="detail-row"><div class="detail-label">County</div><div class="detail-value">Solano County, California</div></div>
+    <div class="detail-row"><div class="detail-label">Subdivision</div><div class="detail-value">Shadow Ridge Unit No. 1 (Westpointe)</div></div>
+    <div class="detail-row"><div class="detail-label">Neighborhood</div><div class="detail-value">Glen Cove Community, Vallejo</div></div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">🪵</div><div class="feature-title">Wood-Burning Fireplace</div><div class="feature-desc">Living room fireplace with brick surround — as seen in the listing photos.</div></div>
+    <div class="feature-card"><div class="feature-icon">🏠</div><div class="feature-title">Loft + Open Staircase</div><div class="feature-desc">Dramatic double-height living room with open iron-railed staircase leading to the loft level.</div></div>
+    <div class="feature-card"><div class="feature-icon">🌿</div><div class="feature-title">Terraced Backyard</div><div class="feature-desc">Concrete patio with retaining wall, mature trees, and landscaped hillside.</div></div>
+    <div class="feature-card"><div class="feature-icon">🔆</div><div class="feature-title">Skylight Kitchen</div><div class="feature-desc">Distinctive skylight ceiling in the kitchen floods the space with natural light.</div></div>
+    <div class="feature-card"><div class="feature-icon">🚗</div><div class="feature-title">2-Car Attached Garage</div><div class="feature-desc">Full two-car attached garage with wide concrete driveway and rock garden frontyard.</div></div>
+    <div class="feature-card"><div class="feature-icon">🛁</div><div class="feature-title">Double-Sink Primary Bath</div><div class="feature-desc">Spacious primary bathroom with double sinks, solid surface countertop, and tub.</div></div>
+  </div>
+</section>
+
+<!-- HISTORY TIMELINE -->
+<section id="history">
+  <p class="section-label">Ownership & Development History</p>
+  <h2 class="section-title">A Home With<br>Deep Roots</h2>
+  <div class="timeline">
+    <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">March 19, 1985</div><div class="timeline-event">Subdivision Map Filed</div><div class="timeline-detail">Shadow Ridge Unit No. 1 recorded with Solano County — Book 45 of Maps, Page 1. Lots 1–79 established covering Starfish Drive, Seahorse Drive, Nautilus Drive, Thresher Drive, and surrounding streets.</div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">March 29, 1985</div><div class="timeline-event">CC&Rs Recorded by Citation Homes</div><div class="timeline-detail">Citation Homes, a General Partnership, executed the Declaration of Covenants, Conditions and Restrictions for Shadow Ridge Unit No. 1. Signed by Richard W. Jensen, Development Manager, Northern Division, Citation Builders — 2777 Alvarado Street, San Leandro, CA.</div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">1985–1986</div><div class="timeline-event">Home Constructed</div><div class="timeline-detail">741 Starfish Drive built and sold new by Citation Builders. One of the first homes in the Glen Cove master-planned community, which was simultaneously developed by approximately a dozen builders.</div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">1988</div><div class="timeline-event">Citation Builders Restructured</div><div class="timeline-detail">Founder Stephen Schott bought out his partners, renamed the company Citation Homes Central, and relocated to Santa Clara. The firm grew to build 50,000+ homes statewide. Schott later co-owned the Oakland A's during the Moneyball era.</div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">2000</div><div class="timeline-event">Assessed Value: $220,000</div><div class="timeline-detail">Earliest available tax assessment on record. Property taxes at the time: $3,119/year.</div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">2007–2008</div><div class="timeline-event">Pre-Crisis Peak ~$289,000</div><div class="timeline-detail">Assessed value peaked just before the 2008 financial crisis. Vallejo filed for bankruptcy in 2008, one of the largest municipal bankruptcies in California history.</div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">2012</div><div class="timeline-event">Post-Crisis Low: $204,000</div><div class="timeline-detail">Assessed value bottomed at $204,000 — a ~30% decline from the 2008 peak, reflecting the broader Bay Area housing crash.</div></div>
+    <div class="timeline-item"><div class="timeline-dot highlight"></div><div class="timeline-year">December 20, 2019</div><div class="timeline-event">Sold to Jay Maisey</div><div class="timeline-detail">Prior owner purchased during the Bay Area market's strong recovery phase.</div><span class="timeline-price">$515,000</span></div>
+    <div class="timeline-item"><div class="timeline-dot highlight"></div><div class="timeline-year">September–October 2023</div><div class="timeline-event">Listed & Sold — 19 Days on Market</div><div class="timeline-detail">Listed Sept. 21, 2023 at $699,000 by Pratima Agarwal (Realty Spin). Pending in 19 days. Closed Oct. 31, 2023. Buyer's agent: Elaine Sciacca, Coldwell Banker Kappel Gateway. Seller credit to buyer: $11,500.</div><span class="timeline-price">$695,000</span></div>
+    <div class="timeline-item"><div class="timeline-dot highlight"></div><div class="timeline-year">October 31, 2023 — Present</div><div class="timeline-event">Current Owner — Juleon Rabbani</div><div class="timeline-detail">Purchased with Sierra Pacific Mortgage ($674,150) and CalHFA down payment assistance ($20,850). Financed through Kappel Mortgage Group. Escrow: Fidelity National Title, Officer Lorene Barker.</div></div>
+  </div>
+</section>
+
+<!-- TAX HISTORY -->
+<section id="taxes">
+  <p class="section-label">Public Records</p>
+  <h2 class="section-title">Tax Assessment<br>History</h2>
+  <div id="taxChart"></div>
+</section>
+
+<!-- BUILDER -->
+<section id="builder">
+  <p class="section-label">Provenance</p>
+  <h2 class="section-title">Built by<br>Citation Homes</h2>
+  <div class="builder-layout">
+    <div>
+      <div class="builder-body">
+        <p>Your home was built by <strong>Citation Builders</strong> — a mid-sized Bay Area residential developer founded in 1977 by Stephen C. Schott and partners, operating out of San Leandro, California. Shadow Ridge Unit No. 1 (Westpointe) was one of their earliest major projects, filed just eight years after the company's founding.</p>
+        <p>In 1988, Schott bought out his partners and reformed the company as <strong>Citation Homes Central</strong>, relocating to Santa Clara. Despite a lean staff of fewer than 25 employees, the firm became one of California's largest homebuilders — responsible for over 50,000 homes statewide.</p>
+        <p>Stephen Schott was inducted into the California Homebuilding Foundation Hall of Fame in 2004. He is also widely known as the co-owner of the Oakland Athletics from 1995–2005 — the team immortalized in Michael Lewis's <em>Moneyball</em>.</p>
+      </div>
+      <!-- Exterior photo in builder section -->
+      <div style="margin: 2rem 0; position:relative; overflow:hidden; height:220px;">
+        <img src="IMG_8992.webp" alt="741 Starfish Drive exterior" style="width:100%;height:100%;object-fit:cover;object-position:center 40%;display:block;" />
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(26,58,74,0.5),transparent);"></div>
+        <div style="position:absolute;bottom:1rem;left:1.25rem;font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:var(--tide);text-transform:uppercase;">741 Starfish Drive · Built 1986 · Citation Builders</div>
+      </div>
+      <div class="builder-fact">
+        <div class="builder-fact-label">From the CC&Rs — March 29, 1985</div>
+        <div class="builder-fact-text">"Citation Homes, a General Partnership, is the Owner of that certain real property situated in the City of Vallejo, County of Solano, State of California, comprising Lots 1 through 79, inclusive, as shown on the Map entitled 'Shadow Ridge Unit No. 1.'"</div>
+      </div>
+    </div>
+    <div class="builder-stats">
+      <div class="builder-stat-item"><div class="builder-stat-number">1977</div><div class="builder-stat-desc">Year Citation Builders was founded by Stephen Schott and partners in the San Francisco Bay Area</div></div>
+      <div class="builder-stat-item"><div class="builder-stat-number">79</div><div class="builder-stat-desc">Original lots in Shadow Ridge Unit No. 1 — your home's subdivision, covering Starfish Dr and surrounding streets</div></div>
+      <div class="builder-stat-item"><div class="builder-stat-number">50K+</div><div class="builder-stat-desc">Homes built statewide by Citation Homes Central over the company's history</div></div>
+      <div class="builder-stat-item"><div class="builder-stat-number">~12</div><div class="builder-stat-desc">Builders who simultaneously developed Glen Cove's master-planned community starting in 1985–86</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NEIGHBORHOOD -->
+<section id="neighborhood">
+  <p class="section-label">Location & Community</p>
+  <h2 class="section-title">Glen Cove,<br>Vallejo</h2>
+  <p style="max-width:600px;line-height:1.8;color:var(--mist);margin-bottom:2rem;">A master-planned community nestled between Vallejo and Benicia along the Carquinez Strait. Known for its rolling hills, private one-road-in layout, and active Glen Cove Community Association.</p>
+  <div class="neighborhood-grid">
+    <div class="neighborhood-card"><div class="neighborhood-stat">23</div><div class="neighborhood-label">Distinct Developments</div></div>
+    <div class="neighborhood-card"><div class="neighborhood-stat">0%</div><div class="neighborhood-label">Vacancy Rate</div></div>
+    <div class="neighborhood-card"><div class="neighborhood-stat">$612K</div><div class="neighborhood-label">Median Home Value</div></div>
+    <div class="neighborhood-card"><div class="neighborhood-stat">5 mi</div><div class="neighborhood-label">To Downtown Vallejo</div></div>
+    <div class="neighborhood-card"><div class="neighborhood-stat">36 mi</div><div class="neighborhood-label">To Oakland Airport</div></div>
+    <div class="neighborhood-card"><div class="neighborhood-stat">I-780</div><div class="neighborhood-label">Highway Access</div></div>
+  </div>
+  <div class="features-grid" style="margin-top:3rem;">
+    <div class="feature-card" style="background:var(--dune);color:var(--ocean);">
+      <div class="feature-icon">⛴️</div>
+      <div class="feature-title" style="color:var(--ocean);">Vallejo Ferry</div>
+      <div class="feature-desc" style="color:var(--mist);">Direct ferry to San Francisco from the Vallejo Terminal — no bridge traffic.</div>
+    </div>
+    <div class="feature-card" style="background:var(--dune);color:var(--ocean);">
+      <div class="feature-icon">🚗</div>
+      <div class="feature-title" style="color:var(--ocean);">Highway I-780</div>
+      <div class="feature-desc" style="color:var(--mist);">Connects to I-80 via the Benicia-Martinez Bridge toward Bay Area, Sacramento, and Napa.</div>
+    </div>
+    <div class="feature-card" style="background:var(--dune);color:var(--ocean);">
+      <div class="feature-icon">🥾</div>
+      <div class="feature-title" style="color:var(--ocean);">Benicia State Rec Area</div>
+      <div class="feature-desc" style="color:var(--mist);">Hiking and walking trails through rolling golden hills, just minutes from your door.</div>
+    </div>
+    <div class="feature-card" style="background:var(--dune);color:var(--ocean);">
+      <div class="feature-icon">⛵</div>
+      <div class="feature-title" style="color:var(--ocean);">Glen Cove Marina</div>
+      <div class="feature-desc" style="color:var(--mist);">Boating, fishing, and waterfront walks at the marina along the Carquinez Strait.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHOOLS -->
+<section id="schools">
+  <p class="section-label">Education</p>
+  <h2 class="section-title">Assigned Schools</h2>
+  <p style="color:var(--mist);max-width:500px;line-height:1.7;margin-bottom:0;">All schools are part of Vallejo City Unified School District. Ratings from GreatSchools.org.</p>
+  <div class="schools-grid">
+    <div class="school-card"><div class="school-rating rating-good">6</div><div class="school-type">Elementary · Assigned</div><div class="school-name">Glen Cove Elementary School</div><div class="school-grades">Grades K–5</div><div class="school-distance">📍 0.6 miles</div></div>
+    <div class="school-card"><div class="school-rating rating-mid">—</div><div class="school-type">Middle · Assigned</div><div class="school-name">Franklin Middle School</div><div class="school-grades">Grades 6–8</div><div class="school-distance">📍 Vallejo City Unified</div></div>
+    <div class="school-card"><div class="school-rating rating-mid">4</div><div class="school-type">High School · Assigned</div><div class="school-name">Jesse M. Bethel High School</div><div class="school-grades">Grades 9–12</div><div class="school-distance">📍 3.0 miles</div></div>
+    <div class="school-card"><div class="school-rating rating-good">6</div><div class="school-type">Charter · Nearby</div><div class="school-name">Caliber: Changemakers Academy</div><div class="school-grades">Grades K–8</div><div class="school-distance">📍 3.4 miles</div></div>
+  </div>
+</section>
+
+<!-- VALUE -->
+<section id="value">
+  <p class="section-label">Market Value</p>
+  <h2 class="section-title">Price &<br>Value History</h2>
+  <div class="value-grid">
+    <div class="value-cell"><div class="value-year">Approx. New (1986)</div><div class="value-amount">~$150K</div><div class="value-change">Original Citation Homes sale price</div></div>
+    <div class="value-cell"><div class="value-year">Prior Sale (Dec 2019)</div><div class="value-amount">$515,000</div><div class="value-change">+$295K since 2000 assessment</div></div>
+    <div class="value-cell" style="background:var(--ocean);color:var(--sand);"><div class="value-year" style="color:var(--tide);">Your Purchase (Oct 2023)</div><div class="value-amount" style="color:var(--sand);">$695,000</div><div class="value-change" style="color:var(--tide);">+35% since 2019</div></div>
+  </div>
+  <div style="margin-top:3rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;">
+    <div style="padding:2rem;background:white;border:1px solid var(--dune);"><div class="section-label" style="margin-bottom:0.5rem;">Zestimate (2026)</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ocean);">$682,300</div><div style="font-size:0.8rem;color:var(--mist);margin-top:0.3rem;">Est. range: $648K – $716K</div></div>
+    <div style="padding:2rem;background:white;border:1px solid var(--dune);"><div class="section-label" style="margin-bottom:0.5rem;">Est. Rent (Zillow)</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ocean);">$3,259</div><div style="font-size:0.8rem;color:var(--mist);margin-top:0.3rem;">Per month</div></div>
+    <div style="padding:2rem;background:white;border:1px solid var(--dune);"><div class="section-label" style="margin-bottom:0.5rem;">2025 Property Tax</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ocean);">$9,508</div><div style="font-size:0.8rem;color:var(--mist);margin-top:0.3rem;">$793/mo · Assessed: $708,900</div></div>
+    <div style="padding:2rem;background:white;border:1px solid var(--dune);"><div class="section-label" style="margin-bottom:0.5rem;">Price Per Sq Ft</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ocean);">$379</div><div style="font-size:0.8rem;color:var(--mist);margin-top:0.3rem;">At 2023 sale price</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-title">741 Starfish Drive</div>
+    <p style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--mist);margin-top:0.4rem;letter-spacing:0.1em;">Glen Cove · Shadow Ridge Unit No. 1 · Vallejo, CA 94591</p>
+  </div>
+  <div class="footer-meta">
+    <div>APN 0075-184-080 · Solano County</div>
+    <div>Built 1986 · Citation Builders · San Leandro, CA</div>
+    <div>Listing photos © 2023 MLSListings #ML81942699</div>
+    <div style="color:var(--tide);margin-top:0.4rem;">Data compiled June 2026</div>
+  </div>
+</footer>
+
+<script>
+// Photo data
+const photos = [
+  // Exterior
+  { src: 'IMG_8978.webp', caption: 'Front Exterior — Main View' },
+  { src: 'IMG_8992.webp', caption: 'Front Exterior — Garage' },
+  { src: 'IMG_8989.webp', caption: 'Front Exterior — Driveway View' },
+  { src: 'IMG_8979.webp', caption: 'Front Entry Door' },
+  { src: 'IMG_8985.webp', caption: 'Rear Exterior' },
+  { src: 'IMG_8967.webp', caption: 'Rear Exterior — Patio Wide View' },
+  { src: 'IMG_8991.webp', caption: 'Backyard — Wide View' },
+  { src: 'IMG_8976.webp', caption: 'Backyard Patio & Retaining Wall' },
+  // Living Areas
+  { src: 'IMG_8974.webp', caption: 'Living Room — Grand Staircase View' },
+  { src: 'IMG_8968.webp', caption: 'Living Room — Fireplace & Windows' },
+  { src: 'IMG_8975.webp', caption: 'Living Room — Vaulted Ceilings & Entry' },
+  { src: 'IMG_8965.webp', caption: 'Living Room — Staircase & Dining Arch' },
+  { src: 'IMG_8980.webp', caption: 'Living Room — Loft & Staircase View' },
+  // Dining & Family
+  { src: 'IMG_8964.webp', caption: 'Formal Dining Room — From Kitchen' },
+  { src: 'IMG_8957.webp', caption: 'Formal Dining Room — Slider to Backyard' },
+  { src: 'IMG_8983.webp', caption: 'Family Room Open to Kitchen' },
+  { src: 'IMG_8986.webp', caption: 'Family Room' },
+  { src: 'IMG_8970.webp', caption: 'Family Room — Sectional & TV' },
+  { src: 'IMG_8959.webp', caption: 'Family Room & Breakfast Nook' },
+  { src: 'IMG_8993.webp', caption: 'Breakfast Nook / Dining Area' },
+  // Kitchen
+  { src: 'IMG_8977.webp', caption: 'Kitchen — Stainless Appliances' },
+  { src: 'IMG_8990.webp', caption: 'Kitchen — Alternate View' },
+  // Loft & Office
+  { src: 'IMG_8960.webp', caption: 'Loft / Office — Overlooks Living Room' },
+  { src: 'IMG_8984.webp', caption: 'Office / Bedroom 3 — Track Lighting' },
+  // Primary Bedroom & Bath
+  { src: 'IMG_8971.webp', caption: 'Primary Bedroom — Anchor Wall Art' },
+  { src: 'IMG_8966.webp', caption: 'Primary Bedroom — Warm Lighting' },
+  { src: 'IMG_8981.webp', caption: 'Primary Bedroom — Ceiling Fan' },
+  { src: 'IMG_8982.webp', caption: 'Primary Bedroom — Closet & Hallway' },
+  { src: 'IMG_8987.webp', caption: 'Primary Bathroom — Double Sinks' },
+  { src: 'IMG_8969.webp', caption: 'Primary Bathroom — Shower' },
+  // Bedrooms 2 & 3
+  { src: 'IMG_8963.webp', caption: 'Bedroom 2 — Mirror Closet' },
+  { src: 'IMG_8961.webp', caption: 'Bedroom 2 — Window View' },
+  { src: 'IMG_8972.webp', caption: 'Bedroom 3 — Navy & Floral' },
+  { src: 'IMG_8973.webp', caption: 'Bedroom 3 — Closet & En-suite View' },
+  // Other
+  { src: 'IMG_8962.webp', caption: 'Upper Hallway — Bathroom Access' },
+  { src: 'IMG_8958.webp', caption: 'Laundry Room & Bathroom' },
+  { src: 'IMG_8988.webp', caption: 'Half Bath (Ground Floor)' },
+  { src: 'IMG_8994.webp', caption: 'Second Full Bathroom' },
+];
+
+let currentIdx = 0;
+
+function openLightbox(idx) {
+  currentIdx = idx;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function changeLightbox(dir) {
+  currentIdx = (currentIdx + dir + photos.length) % photos.length;
+  updateLightbox();
+}
+
+function updateLightbox() {
+  const p = photos[currentIdx];
+  document.getElementById('lb-img').src = p.src;
+  document.getElementById('lb-img').alt = p.caption;
+  document.getElementById('lb-caption').textContent = p.caption;
+  document.getElementById('lb-counter').textContent = (currentIdx + 1) + ' / 38';
+}
+
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeLightbox();
+});
+
+document.addEventListener('keydown', function(e) {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') changeLightbox(-1);
+  if (e.key === 'ArrowRight') changeLightbox(1);
+});
+
+// Tax history
+const taxData = [
+  { year: '2025', assessment: 708900, highlight: true },
+  { year: '2024', assessment: 552181 },
+  { year: '2023', assessment: 541355 },
+  { year: '2022', assessment: 530741 },
+  { year: '2021', assessment: 520335 },
+  { year: '2020', assessment: 515000 },
+  { year: '2019', assessment: 339711 },
+  { year: '2018', assessment: 333051 },
+  { year: '2017', assessment: 326521 },
+  { year: '2016', assessment: 320120 },
+  { year: '2015', assessment: 315313 },
+  { year: '2014', assessment: 309138 },
+  { year: '2013', assessment: 280000 },
+  { year: '2012', assessment: 204000 },
+  { year: '2011', assessment: 222000 },
+  { year: '2010', assessment: 250000 },
+  { year: '2008', assessment: 288508 },
+  { year: '2005', assessment: 271868 },
+  { year: '2000', assessment: 220000 },
+];
+
+const maxVal = Math.max(...taxData.map(d => d.assessment));
+const chart = document.getElementById('taxChart');
+taxData.forEach((d, i) => {
+  const pct = (d.assessment / maxVal * 100).toFixed(1);
+  const fmt = '$' + Math.round(d.assessment / 1000) + 'K';
+  chart.innerHTML += `<div class="tax-bar-container" style="transition-delay:${i*0.04}s"><span class="tax-year">${d.year}</span><div class="tax-bar-track"><div class="tax-bar-fill${d.highlight?' highlight':''}" data-pct="${pct}"></div></div><span class="tax-value">${fmt}</span></div>`;
+});
+
+// Intersection Observer
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      const fill = entry.target.querySelector('.tax-bar-fill');
+      if (fill) setTimeout(() => { fill.style.width = fill.dataset.pct + '%'; }, 50);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.timeline-item, .tax-bar-container').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
