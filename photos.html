@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Tour — 741 Starfish Drive</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f5f0e8; --dune: #e8dfc8; --ocean: #1a3a4a;
+    --seafoam: #2d6a7f; --tide: #4a9ab5; --coral: #c4624a; --ink: #1a1a18; --mist: #8a9ba8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--ink); color: var(--sand); font-family: 'DM Sans', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(26,58,74,0.96); backdrop-filter: blur(10px);
+    padding: 1rem 3rem; display: flex; align-items: center; gap: 2rem;
+    border-bottom: 1px solid rgba(74,154,181,0.2);
+  }
+  .nav-back {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
+    color: var(--tide); text-decoration: none; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--sand); }
+  .nav-title {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em;
+    color: var(--mist); text-transform: uppercase;
+  }
+  .nav-count {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--mist);
+  }
+
+  /* HEADER */
+  .page-header {
+    padding: 3rem 3rem 2rem;
+    border-bottom: 1px solid rgba(74,154,181,0.15);
+  }
+  .page-header-label {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em;
+    color: var(--coral); text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .page-header-title {
+    font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700;
+    color: var(--sand);
+  }
+  .page-header-sub {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em;
+    color: var(--mist); margin-top: 0.4rem; text-transform: uppercase;
+  }
+
+  /* SECTION HEADERS */
+  .photo-section { padding: 2.5rem 3rem 0; }
+  .photo-section-label {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.3em;
+    color: var(--tide); text-transform: uppercase; margin-bottom: 1rem;
+    padding-bottom: 0.75rem; border-bottom: 1px solid rgba(74,154,181,0.2);
+  }
+
+  /* GRID */
+  .photo-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px;
+    margin-bottom: 0;
+  }
+  .photo-grid.wide { grid-template-columns: repeat(3, 1fr); }
+  .photo-item {
+    position: relative; overflow: hidden; aspect-ratio: 4/3; cursor: pointer;
+  }
+  .photo-item.span2 { grid-column: span 2; aspect-ratio: 16/9; }
+  .photo-item img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.4s ease, filter 0.3s ease;
+    filter: brightness(0.85);
+  }
+  .photo-item:hover img { transform: scale(1.05); filter: brightness(1.05); }
+  .photo-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 1.5rem 0.75rem 0.6rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+    font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.85); text-transform: uppercase;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .photo-item:hover .photo-label { opacity: 1; }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.95); align-items: center; justify-content: center;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox img { max-width: 92vw; max-height: 90vh; object-fit: contain; display: block; }
+  .lb-close { position: absolute; top: 1.5rem; right: 2rem; font-size: 1.5rem; color: var(--mist); cursor: pointer; transition: color 0.2s; }
+  .lb-close:hover { color: white; }
+  .lb-prev, .lb-next { position: absolute; top: 50%; transform: translateY(-50%); font-size: 2rem; color: var(--mist); cursor: pointer; padding: 1rem; transition: color 0.2s; user-select: none; }
+  .lb-prev { left: 1rem; } .lb-next { right: 1rem; }
+  .lb-prev:hover, .lb-next:hover { color: white; }
+  .lb-caption { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--mist); text-transform: uppercase; white-space: nowrap; }
+  .lb-counter { position: absolute; top: 1.5rem; left: 2rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--mist); }
+
+  /* FOOTER */
+  footer { margin-top: 4rem; padding: 2rem 3rem; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(74,154,181,0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-link { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--tide); text-decoration: none; text-transform: uppercase; }
+  .footer-link:hover { color: var(--sand); }
+  .footer-copy { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--mist); letter-spacing: 0.1em; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .page-header { padding: 2rem 1.5rem 1.5rem; }
+    .photo-section { padding: 2rem 1.5rem 0; }
+    .photo-grid { grid-template-columns: repeat(2, 1fr); }
+    .photo-item.span2 { grid-column: span 2; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="index.html">← Back to Home</a>
+  <span class="nav-title">741 Starfish Drive · Photo Tour</span>
+  <span class="nav-count">38 Photos · 2023 MLS Listing</span>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-label">2023 MLS Listing · MLSListings #ML81942699</div>
+  <div class="page-header-title">Complete Photo Tour</div>
+  <div class="page-header-sub">741 Starfish Drive · Glen Cove · Vallejo, CA 94591</div>
+</div>
+
+<!-- EXTERIOR -->
+<div class="photo-section">
+  <div class="photo-section-label">Exterior</div>
+  <div class="photo-grid">
+    <div class="photo-item span2" onclick="openLightbox(0)"><img src="IMG_8991.webp" alt="Front exterior" /><div class="photo-label">Front Exterior — Main View</div></div>
+    <div class="photo-item" onclick="openLightbox(1)"><img src="IMG_8992.webp" alt="Garage" /><div class="photo-label">Front — Garage View</div></div>
+    <div class="photo-item" onclick="openLightbox(2)"><img src="IMG_8989.webp" alt="Driveway" /><div class="photo-label">Front — Driveway</div></div>
+    <div class="photo-item" onclick="openLightbox(3)"><img src="IMG_8979.webp" alt="Front entry" /><div class="photo-label">Front Entry Door</div></div>
+    <div class="photo-item" onclick="openLightbox(4)"><img src="IMG_8985.webp" alt="Rear exterior" /><div class="photo-label">Rear Exterior</div></div>
+    <div class="photo-item" onclick="openLightbox(5)"><img src="IMG_8967.webp" alt="Rear wide" /><div class="photo-label">Rear — Wide View</div></div>
+    <div class="photo-item" onclick="openLightbox(6)"><img src="IMG_8978.webp" alt="Backyard" /><div class="photo-label">Backyard</div></div>
+    <div class="photo-item" onclick="openLightbox(7)"><img src="IMG_8976.webp" alt="Patio" /><div class="photo-label">Patio & Retaining Wall</div></div>
+  </div>
+</div>
+
+<!-- LIVING AREAS -->
+<div class="photo-section">
+  <div class="photo-section-label">Living Areas</div>
+  <div class="photo-grid">
+    <div class="photo-item span2" onclick="openLightbox(8)"><img src="IMG_8974.webp" alt="Grand staircase" /><div class="photo-label">Living Room — Grand Staircase</div></div>
+    <div class="photo-item span2" onclick="openLightbox(9)"><img src="IMG_8968.webp" alt="Fireplace" /><div class="photo-label">Living Room — Fireplace & Windows</div></div>
+    <div class="photo-item" onclick="openLightbox(10)"><img src="IMG_8975.webp" alt="Entry view" /><div class="photo-label">Living Room — Entry</div></div>
+    <div class="photo-item" onclick="openLightbox(11)"><img src="IMG_8965.webp" alt="Dining arch" /><div class="photo-label">Living — Staircase Arch</div></div>
+    <div class="photo-item" onclick="openLightbox(12)"><img src="IMG_8980.webp" alt="Loft view" /><div class="photo-label">Living Room — Loft View</div></div>
+    <div class="photo-item" onclick="openLightbox(13)"><img src="IMG_8964.webp" alt="Formal dining" /><div class="photo-label">Formal Dining Room</div></div>
+    <div class="photo-item" onclick="openLightbox(14)"><img src="IMG_8957.webp" alt="Dining slider" /><div class="photo-label">Dining — Backyard Slider</div></div>
+  </div>
+</div>
+
+<!-- FAMILY ROOM & KITCHEN -->
+<div class="photo-section">
+  <div class="photo-section-label">Family Room & Kitchen</div>
+  <div class="photo-grid">
+    <div class="photo-item span2" onclick="openLightbox(15)"><img src="IMG_8983.webp" alt="Family room" /><div class="photo-label">Family Room Open to Kitchen</div></div>
+    <div class="photo-item" onclick="openLightbox(16)"><img src="IMG_8986.webp" alt="Family room 2" /><div class="photo-label">Family Room</div></div>
+    <div class="photo-item" onclick="openLightbox(17)"><img src="IMG_8970.webp" alt="Family room TV" /><div class="photo-label">Family Room — TV Area</div></div>
+    <div class="photo-item" onclick="openLightbox(18)"><img src="IMG_8959.webp" alt="Nook" /><div class="photo-label">Family Room & Nook</div></div>
+    <div class="photo-item" onclick="openLightbox(19)"><img src="IMG_8993.webp" alt="Breakfast nook" /><div class="photo-label">Breakfast Nook</div></div>
+    <div class="photo-item span2" onclick="openLightbox(20)"><img src="IMG_8977.webp" alt="Kitchen" /><div class="photo-label">Kitchen — Appliances</div></div>
+    <div class="photo-item span2" onclick="openLightbox(21)"><img src="IMG_8990.webp" alt="Kitchen 2" /><div class="photo-label">Kitchen — Alternate View</div></div>
+  </div>
+</div>
+
+<!-- LOFT & BEDROOMS -->
+<div class="photo-section">
+  <div class="photo-section-label">Loft & Bedrooms</div>
+  <div class="photo-grid">
+    <div class="photo-item span2" onclick="openLightbox(22)"><img src="IMG_8960.webp" alt="Loft" /><div class="photo-label">Loft — Overlooks Living Room</div></div>
+    <div class="photo-item span2" onclick="openLightbox(23)"><img src="IMG_8984.webp" alt="Office" /><div class="photo-label">Office / Bedroom 3</div></div>
+    <div class="photo-item" onclick="openLightbox(24)"><img src="IMG_8971.webp" alt="Primary bed" /><div class="photo-label">Primary Bedroom</div></div>
+    <div class="photo-item" onclick="openLightbox(25)"><img src="IMG_8966.webp" alt="Primary bed 2" /><div class="photo-label">Primary Bedroom</div></div>
+    <div class="photo-item" onclick="openLightbox(26)"><img src="IMG_8981.webp" alt="Primary bed 3" /><div class="photo-label">Primary Bedroom</div></div>
+    <div class="photo-item" onclick="openLightbox(27)"><img src="IMG_8982.webp" alt="Primary closet" /><div class="photo-label">Primary — Closet</div></div>
+    <div class="photo-item" onclick="openLightbox(30)"><img src="IMG_8963.webp" alt="Bedroom 2" /><div class="photo-label">Bedroom 2 — Mirror Closet</div></div>
+    <div class="photo-item" onclick="openLightbox(31)"><img src="IMG_8961.webp" alt="Bedroom 2 window" /><div class="photo-label">Bedroom 2 — Window</div></div>
+    <div class="photo-item" onclick="openLightbox(32)"><img src="IMG_8972.webp" alt="Bedroom 3" /><div class="photo-label">Bedroom 3</div></div>
+    <div class="photo-item" onclick="openLightbox(33)"><img src="IMG_8973.webp" alt="Bedroom 3 closet" /><div class="photo-label">Bedroom 3 — Closet</div></div>
+  </div>
+</div>
+
+<!-- BATHROOMS & UTILITY -->
+<div class="photo-section">
+  <div class="photo-section-label">Bathrooms & Laundry</div>
+  <div class="photo-grid">
+    <div class="photo-item span2" onclick="openLightbox(28)"><img src="IMG_8987.webp" alt="Primary bath" /><div class="photo-label">Primary Bathroom — Double Sinks</div></div>
+    <div class="photo-item" onclick="openLightbox(29)"><img src="IMG_8969.webp" alt="Primary shower" /><div class="photo-label">Primary Bath — Shower</div></div>
+    <div class="photo-item" onclick="openLightbox(36)"><img src="IMG_8988.webp" alt="Half bath" /><div class="photo-label">Half Bath (Ground Floor)</div></div>
+    <div class="photo-item" onclick="openLightbox(37)"><img src="IMG_8994.webp" alt="Full bath" /><div class="photo-label">Second Full Bathroom</div></div>
+    <div class="photo-item" onclick="openLightbox(34)"><img src="IMG_8962.webp" alt="Upper hallway" /><div class="photo-label">Upper Hallway</div></div>
+    <div class="photo-item" onclick="openLightbox(35)"><img src="IMG_8958.webp" alt="Laundry" /><div class="photo-label">Laundry Room</div></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-close" onclick="closeLightbox()">✕</div>
+  <div class="lb-counter" id="lb-counter">1 / 38</div>
+  <div class="lb-prev" onclick="changeLightbox(-1)">←</div>
+  <img id="lb-img" src="" alt="" />
+  <div class="lb-next" onclick="changeLightbox(1)">→</div>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<footer>
+  <a class="footer-link" href="index.html">← Back to 741 Starfish Drive</a>
+  <span class="footer-copy">Listing photos © 2023 MLSListings #ML81942699</span>
+</footer>
+
+<script>
+const photos = [
+  { src: 'IMG_8991.webp', caption: 'Front Exterior — Main View' },
+  { src: 'IMG_8992.webp', caption: 'Front Exterior — Garage View' },
+  { src: 'IMG_8989.webp', caption: 'Front Exterior — Driveway' },
+  { src: 'IMG_8979.webp', caption: 'Front Entry Door' },
+  { src: 'IMG_8985.webp', caption: 'Rear Exterior' },
+  { src: 'IMG_8967.webp', caption: 'Rear Exterior — Wide View' },
+  { src: 'IMG_8978.webp', caption: 'Backyard' },
+  { src: 'IMG_8976.webp', caption: 'Patio & Retaining Wall' },
+  { src: 'IMG_8974.webp', caption: 'Living Room — Grand Staircase' },
+  { src: 'IMG_8968.webp', caption: 'Living Room — Fireplace & Windows' },
+  { src: 'IMG_8975.webp', caption: 'Living Room — Entry View' },
+  { src: 'IMG_8965.webp', caption: 'Living Room — Staircase Arch' },
+  { src: 'IMG_8980.webp', caption: 'Living Room — Loft View' },
+  { src: 'IMG_8964.webp', caption: 'Formal Dining Room' },
+  { src: 'IMG_8957.webp', caption: 'Dining Room — Backyard Slider' },
+  { src: 'IMG_8983.webp', caption: 'Family Room Open to Kitchen' },
+  { src: 'IMG_8986.webp', caption: 'Family Room' },
+  { src: 'IMG_8970.webp', caption: 'Family Room — TV Area' },
+  { src: 'IMG_8959.webp', caption: 'Family Room & Nook' },
+  { src: 'IMG_8993.webp', caption: 'Breakfast Nook' },
+  { src: 'IMG_8977.webp', caption: 'Kitchen — Appliances' },
+  { src: 'IMG_8990.webp', caption: 'Kitchen — Alternate View' },
+  { src: 'IMG_8960.webp', caption: 'Loft — Overlooks Living Room' },
+  { src: 'IMG_8984.webp', caption: 'Office / Bedroom 3' },
+  { src: 'IMG_8971.webp', caption: 'Primary Bedroom' },
+  { src: 'IMG_8966.webp', caption: 'Primary Bedroom' },
+  { src: 'IMG_8981.webp', caption: 'Primary Bedroom' },
+  { src: 'IMG_8982.webp', caption: 'Primary Bedroom — Closet' },
+  { src: 'IMG_8987.webp', caption: 'Primary Bathroom — Double Sinks' },
+  { src: 'IMG_8969.webp', caption: 'Primary Bathroom — Shower' },
+  { src: 'IMG_8963.webp', caption: 'Bedroom 2 — Mirror Closet' },
+  { src: 'IMG_8961.webp', caption: 'Bedroom 2 — Window' },
+  { src: 'IMG_8972.webp', caption: 'Bedroom 3' },
+  { src: 'IMG_8973.webp', caption: 'Bedroom 3 — Closet' },
+  { src: 'IMG_8962.webp', caption: 'Upper Hallway' },
+  { src: 'IMG_8958.webp', caption: 'Laundry Room' },
+  { src: 'IMG_8988.webp', caption: 'Half Bath (Ground Floor)' },
+  { src: 'IMG_8994.webp', caption: 'Second Full Bathroom' },
+];
+
+let currentIdx = 0;
+function openLightbox(idx) { currentIdx = idx; updateLightbox(); document.getElementById('lightbox').classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); document.body.style.overflow = ''; }
+function changeLightbox(dir) { currentIdx = (currentIdx + dir + photos.length) % photos.length; updateLightbox(); }
+function updateLightbox() {
+  const p = photos[currentIdx];
+  document.getElementById('lb-img').src = p.src;
+  document.getElementById('lb-caption').textContent = p.caption;
+  document.getElementById('lb-counter').textContent = (currentIdx + 1) + ' / ' + photos.length;
+}
+document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') changeLightbox(-1);
+  if (e.key === 'ArrowRight') changeLightbox(1);
+});
+</script>
+</body>
+</html>
